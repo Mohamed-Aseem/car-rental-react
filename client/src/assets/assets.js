@@ -141,7 +141,7 @@ export const dummyCarData = [
         "pricePerDay": 130,
         "location": "Chicago",
         "description": "The Toyota Corolla is a mid-size luxury sedan produced by Toyota. The Corolla made its debut in 2008 as the first sedan ever produced by Toyota.",
-        "isAvaliable": true,
+        "isAvaliable": false,
         "createdAt": "2025-04-16T08:33:57.993Z",
     },
     {
