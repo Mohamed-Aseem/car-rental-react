@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
 import { assets } from '../../assets/assets'
 import Title from '../../components/owner/Title'
+import { useAppContext } from '../../context/AppContext'
+import toast from 'react-hot-toast'
 
 const AddCar = () => {
 
-  const currency = import.meta.env.VITE_CURRENCY;
+  const { axios, currency } = useAppContext()
+
   const [image, setImage] = useState(null)
   const [car, setCar] = useState({
     brand: "",
@@ -17,11 +20,45 @@ const AddCar = () => {
     seating_capacity: 0,
     location: '',
     description: '',
-
   })
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+
+    if (isLoading) return null
+
+    setIsLoading(true)
+    try {
+      const formData = new FormData()
+      formData.append('image', image)
+      formData.append('carData', JSON.stringify(car))
+
+      const { data } = await axios.post('/api/owner/add-car', formData)
+      if (data.success) {
+        toast.success(data.message)
+        setImage(null)
+        setCar({
+          brand: "",
+          model: "",
+          year: 0,
+          pricePerDay: 0,
+          category: '',
+          transmission: '',
+          fuel_type: '',
+          seating_capacity: 0,
+          location: '',
+          description: '',
+        })
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
 
@@ -126,9 +163,9 @@ const AddCar = () => {
           <textarea rows={5} placeholder='e.g. A luxurious SUV with a spacious interior and a powerful engine.' required className='px-3 py-2 mt-1 border border-borderColor rounded-md outline-none' value={car.description} onChange={e => setCar({ ...car, description: e.target.value })}></textarea>
         </div>
 
-        <button className='flex items-center gap-2 px-4 py-2.5 mt-4 mb-4 bg-primary text-white rounded-md font-medium w-max cursor-pointer'>
+        <button type='submit' className='flex items-center gap-2 px-4 py-2.5 mt-4 mb-4 bg-primary text-white rounded-md font-medium w-max cursor-pointer'>
           <img src={assets.tick_icon} alt="Icon" />
-          List Your Car
+          {isLoading ? 'Listing...' : 'List Your Car'}
         </button>
 
       </form>
