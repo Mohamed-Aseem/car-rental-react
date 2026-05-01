@@ -9,16 +9,40 @@ import toast from 'react-hot-toast'
 const CarDetails = () => {
 
   const { id } = useParams()
-  const { cars, axios, pickupDate, setPickupDate, returnDate, setReturnDate } = useAppContext()
+  const { cars, axios, pickupDate, setPickupDate, returnDate, setReturnDate, currency } = useAppContext()
 
   const navigate = useNavigate();
+
   const [car, setCar] = useState(null)
-  const currency = import.meta.env.VITE_CURRENCY
+  const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
     setCar(cars.find((car) => car._id === id))
+
+    return () => {
+      setPickupDate('');
+      setReturnDate('');
+    };
   }, [cars, id])
 
+  useEffect(() => {
+    if (pickupDate && returnDate && car) {
+      const picked = new Date(pickupDate);
+      const returned = new Date(returnDate);
+
+      const noOfDays = Math.ceil(
+        (returned - picked) / (1000 * 60 * 60 * 24)
+      );
+
+      if (noOfDays > 0) {
+        setTotalPrice(noOfDays * car.pricePerDay);
+      } else {
+        setTotalPrice(0);
+      }
+    } else {
+      setTotalPrice(0);
+    }
+  }, [pickupDate, returnDate, car]);
 
   const handleSumit = async (e) => {
     e.preventDefault();
@@ -30,9 +54,6 @@ const CarDetails = () => {
       })
       if (data.success) {
         toast.success(data.message)
-        setPickupDate('');
-        setReturnDate('');
-
         navigate('/my-bookings')
       } else {
         toast.error(data.message)
@@ -100,7 +121,18 @@ const CarDetails = () => {
 
         {/* Right - Booking Form */}
         <form onSubmit={handleSumit} className='shadow-lg h-max sticky top-18 rounded-xl p-6 space-y-6 text-gray-500'>
-          <p className='flex items-center justify-between text-2xl text-gray-800 font-semibold'>{currency} {car.pricePerDay} <span className='text-base text-gray-400 font-normal'> per day</span></p>
+
+          <>
+            <p className='flex items-center justify-between text-2xl text-gray-800 font-semibold'>
+              {currency} {car.pricePerDay} <span className='text-base text-gray-400 font-normal'> per day</span>
+            </p>
+            {totalPrice > 0 && (
+              <p className='mt-2 flex items-center justify-between text-2xl text-gray-800 font-semibold'>
+                {currency} {totalPrice} <span className='text-base text-gray-400 font-normal'>Total</span>
+              </p>
+            )}
+          </>
+
           <hr className='border-borderColor my-6' />
 
           <div className='flex flex-col gap-2'>
