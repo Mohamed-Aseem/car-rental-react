@@ -58,11 +58,19 @@ export const createBooking = async (req, res) => {
 
         const isAvaliable = await checkAvailability(car, pickupDate, returnDate);
         if (!isAvaliable) {
-            res.json({
+            return res.json({
                 success: false,
                 message: "Car is not available"
             })
         }
+
+        if (new Date(returnDate) <= new Date(pickupDate)) {
+            return res.json({
+                success: false,
+                message: "Return date must be after pickup date"
+            });
+        }
+        
         const carData = await Car.findById(car)
 
         //Calculate the price based on pickupDate and returnDate
@@ -135,11 +143,11 @@ export const getOwnerBookings = async (req, res) => {
 export const changeBookingStatus = async (req, res) => {
     try {
         const { _id } = req.user;
-        const {bookingId, status} = req.body;
+        const { bookingId, status } = req.body;
 
         const booking = await Booking.findById(bookingId)
 
-        if(booking.owner.toString() !== _id.toString()){
+        if (booking.owner.toString() !== _id.toString()) {
             return res.json({
                 success: false,
                 message: "Unauthorized"
