@@ -4,7 +4,7 @@ import { assets, dummyCarData } from '../assets/assets'
 import Loader from '../components/Loader'
 import { useAppContext } from '../context/AppContext'
 import toast from 'react-hot-toast'
-
+import { motion } from 'motion/react'
 
 const CarDetails = () => {
 
@@ -73,10 +73,26 @@ const CarDetails = () => {
 
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12'>
         {/* Left - Car Image & Details */}
-        <div className='lg:col-span-2'>
-          <img src={car.image} alt="Car Image" className='w-full h-auto md:max-h-100 object-cover rounded-xl mb-6 shadow-md' />
+        <motion.div
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className='lg:col-span-2'
+        >
+          <motion.img
+            initial={{ scale: 0.98, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            src={car.image} alt="Car Image"
+            className='w-full h-auto md:max-h-100 object-cover rounded-xl mb-6 shadow-md'
+          />
 
-          <div className='space-y-6'>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className='space-y-6'
+          >
             <div>
               <h1 className='text-3xl font-bold'>{car.brand} {car.model}</h1>
               <p className='text-gray-500 text-lg'>{car.category} - {car.year}</p>
@@ -89,10 +105,16 @@ const CarDetails = () => {
                 { icon: assets.carIcon, text: `${car.transmission}` },
                 { icon: assets.location_icon, text: `${car.location}` },
               ].map(({ icon, text }) => (
-                <div key={text} className='flex flex-col items-center bg-light p-4 rounded-lg'>
+                <motion.div
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.4 }}
+                  key={text}
+                  className='flex flex-col items-center bg-light p-4 rounded-lg'
+                >
                   <img src={icon} alt="Icon" className='h-5 mb-2' />
                   {text}
-                </div>
+                </motion.div>
               ))}
             </div>
 
@@ -116,11 +138,15 @@ const CarDetails = () => {
                 }
               </ul>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Right - Booking Form */}
-        <form onSubmit={handleSumit} className='shadow-lg h-max sticky top-18 rounded-xl p-6 space-y-6 text-gray-500'>
+        <motion.form
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          onSubmit={handleSumit} className='shadow-lg h-max sticky top-18 rounded-xl p-6 space-y-6 text-gray-500'>
 
           <>
             <p className='flex items-center justify-between text-2xl text-gray-800 font-semibold'>
@@ -148,7 +174,7 @@ const CarDetails = () => {
           <button className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer'>Book Now</button>
 
           <p className='text-center text-sm'>No credit card required to reserve</p>
-        </form>
+        </motion.form>
       </div>
     </div>
   ) : <Loader />
