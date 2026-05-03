@@ -12,14 +12,14 @@ const Login = () => {
     const onSubmitHandler = async (e) => {
         try {
             e.preventDefault();
-            const { data } = await axios.post(`/api/user/${state}`, {name, email, password})
+            const { data } = await axios.post(`/api/user/${state}`, { name, email, password })
 
-            if(data.success){
+            if (data.success) {
                 navigate('/')
                 setToken(data.token)
                 localStorage.setItem('token', data.token)
                 setShowLogin(false)
-            }else{
+            } else {
                 toast.error(data.message)
             }
 
@@ -60,6 +60,9 @@ const Login = () => {
                 <button className="bg-primary hover:bg-blue-800 transition-all text-white w-full py-2 rounded-md cursor-pointer">
                     {state === "register" ? "Create Account" : "Login"}
                 </button>
+                <p>
+                    Demo Creds:
+                    <br /> Email: Aseem123@gmail.com <br /> Password: Aseem123 <br />(Toyota - Owner)</p>
             </form>
 
         </div>
